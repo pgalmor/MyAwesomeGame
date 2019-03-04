@@ -29,10 +29,14 @@ int main(int argc, char **argv) {
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {
 				case SDLK_LEFT:
-					rectangle.x = rectangle.x - 4;
+					if (rectangle.x != 0) {
+						rectangle.x = rectangle.x - 4;
+					}
 					break;
 				case SDLK_RIGHT:
-					rectangle.x = rectangle.x + 4;
+					if (rectangle.x != 400) {
+						rectangle.x = rectangle.x + 4;
+					}
 					break;
 				case SDLK_UP:
 					rectangle.y = rectangle.y - 4;
@@ -40,6 +44,9 @@ int main(int argc, char **argv) {
 
 				case SDLK_DOWN:
 					rectangle.y = rectangle.y + 4;
+					break;
+				case SDLK_SPACE:
+
 					break;
 				}
 			}
