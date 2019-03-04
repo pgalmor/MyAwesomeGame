@@ -13,7 +13,7 @@ int main(int argc, char **argv) {
 	SDL_Renderer *winRender;
 	SDL_Rect rectangle;
 	bool winClose = true;
-	mainFin = SDL_CreateWindow("Exercici 1", 600, 100, 600, 600, SDL_WINDOW_RESIZABLE);
+	mainFin = SDL_CreateWindow("MyAwesomeGame by Pol Galan", 600, 100, 600, 600, SDL_WINDOW_RESIZABLE);
 	winRender = SDL_CreateRenderer(mainFin, -1, SDL_RENDERER_ACCELERATED);
 	SDL_Event event;
 	rectangle.x = 20;
