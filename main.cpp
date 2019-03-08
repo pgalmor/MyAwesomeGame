@@ -1,9 +1,10 @@
 #include <iostream>
 #include "SDL/include/SDL.h"
+#include "SDL_image/include/SDL_image.h"
 
 #pragma comment(lib, "SDL/libx86/SDL2.lib")
-
 #pragma comment(lib, "SDL/libx86/SDL2main.lib")
+#pragma comment(lib, "SDL_image/libx86/SDL2_image.lib")
 
 
 using namespace std;
@@ -11,10 +12,20 @@ using namespace std;
 #define Bullet_No 10 // Maximum no of alive bullet
 
 int main(int argc, char **argv) {
+	bool winClose = true;
+	int SDL_Init(SDL_INIT_VIDEO);
+	int IMG_Init(IMG_INIT_PNG);
+
 	SDL_Window *mainFin;
 	SDL_Renderer *winRender;
 	SDL_Rect rectangle;
 	SDL_Rect shot;
+	
+	SDL_Surface *image;
+	image = IMG_Load("Assets/pingu.png");
+	if (!image) {
+		winClose = false;
+	}
 
 	/*class _Bullet {
 	public:
@@ -29,7 +40,7 @@ int main(int argc, char **argv) {
 		bullet[i].h = 20;
 	}*/
 
-	bool winClose = true;
+	
 	bool shoot = false;
 	mainFin = SDL_CreateWindow("MyAwesomeGame by Pol Galan", 600, 100, 600, 600, SDL_WINDOW_RESIZABLE);
 	winRender = SDL_CreateRenderer(mainFin, -1, SDL_RENDERER_ACCELERATED);
@@ -90,6 +101,7 @@ int main(int argc, char **argv) {
 	}
 	SDL_DestroyRenderer(winRender);
 	SDL_DestroyWindow(mainFin);
+	IMG_Quit();
 	SDL_Quit();
 	cin.get();
 
