@@ -9,14 +9,14 @@
 using namespace std;
 
 #define Bullet_No 10 // Maximum no of alive bullet
-void shotRun();
 
 int main(int argc, char **argv) {
 	SDL_Window *mainFin;
 	SDL_Renderer *winRender;
 	SDL_Rect rectangle;
+	SDL_Rect shot;
 
-	class _Bullet {
+	/*class _Bullet {
 	public:
 		bool alive; // For bullet alive checking
 		SDL_Rect shot; // For SDL fill rectangle
@@ -27,9 +27,10 @@ int main(int argc, char **argv) {
 		bullet[i].alive = 0;
 		bullet[i].w = 75; // Bullet Size Configuration
 		bullet[i].h = 20;
-	}
+	}*/
 
 	bool winClose = true;
+	bool shoot = false;
 	mainFin = SDL_CreateWindow("MyAwesomeGame by Pol Galan", 600, 100, 600, 600, SDL_WINDOW_RESIZABLE);
 	winRender = SDL_CreateRenderer(mainFin, -1, SDL_RENDERER_ACCELERATED);
 	SDL_Event event;
@@ -37,6 +38,14 @@ int main(int argc, char **argv) {
 	rectangle.y = 10;
 	rectangle.w = 200;
 	rectangle.h = 100;
+
+	while (shoot == true) {
+		shot.x = rectangle.x + 200;
+		shot.y = rectangle.y + 40;
+		shot.w = 75;
+		shot.h = 20;
+	}
+
 	while (winClose) {
 		if (SDL_PollEvent(&event)) {
 			switch (event.type) {
@@ -62,13 +71,19 @@ int main(int argc, char **argv) {
 					rectangle.y = rectangle.y + 4;
 					break;
 				case SDLK_SPACE:
+					shoot = true;
 					
+					break;
+				case SDLK_ESCAPE:
+					winClose = false;
 					break;
 				}
 			}
 		}
 		SDL_SetRenderDrawColor(winRender, 255, 0, 0, 0);
 		SDL_RenderFillRect(winRender, &rectangle);
+		SDL_SetRenderDrawColor(winRender, 0, 255, 0, 0);
+		SDL_RenderFillRect(winRender, &shot);
 		SDL_RenderPresent(winRender);
 		SDL_SetRenderDrawColor(winRender, 0, 0, 0xff, 0xff);
 		SDL_RenderClear(winRender);
@@ -80,7 +95,7 @@ int main(int argc, char **argv) {
 
 
 	
-
+	/*
 	while (shotRun) {
 
 		// Check if exist any empty slot for Initialize a bullet
@@ -106,7 +121,7 @@ int main(int argc, char **argv) {
 		if (!bKeySpace) bKeySpaceTick = 0; // Release KeyA counter = 0
 
 	}; // while(bRun) { END
-
+	*/
 
 	return 0;
 }
