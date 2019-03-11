@@ -12,7 +12,11 @@ using namespace std;
 
 int main(int argc, char **argv) {
 	bool winClose = true;
-	
+	int SDL_Init(SDL_INIT_VIDEO);
+	int SDL_Init2(SDL_INIT_AUDIO);
+	int IMG_Init(IMG_INIT_PNG);
+	int Mix_Init(MIX_INIT_OGG);
+	Mix_OpenAudio(MIX_DEFAULT_FREQUENCY, MIX_DEFAULT_FORMAT, MIX_DEFAULT_CHANNELS, 1024);
 
 	int SCREEN_WEIGHT = 1920, SCREEN_HEIGHT = 1080;
 
@@ -46,7 +50,6 @@ int main(int argc, char **argv) {
 	}
 	Bullet = SDL_CreateTextureFromSurface(winRender, Load_Surf);
 	SDL_FreeSurface(Load_Surf);
-
 
 	Load_Surf = IMG_Load("Assets/Igloo.jpg");
 	if (!Load_Surf) {
@@ -106,9 +109,9 @@ int main(int argc, char **argv) {
 					rectP2.y = rectP2.y + 15;
 					break;
 				case SDLK_SPACE:
+					shoot = true;
 					rectB2.x = rectP2.x + 240;
 					rectB2.y = rectP2.y + 89;
-					shoot = true;
 					break;
 				case SDLK_ESCAPE:
 					winClose = false;
@@ -120,11 +123,10 @@ int main(int argc, char **argv) {
 		SDL_RenderCopy(winRender, Player, &rectP, &rectP2);
 		if (shoot == true) {
 			SDL_RenderCopy(winRender, Bullet, &rectB, &rectB2);
-			while (shoot == true) {
-				rectB2.x += 1;
-				if (rectB2.x >= SCREEN_WEIGHT) {
-					shoot = false;
-				}
+			rectB2.x += 4;
+			if (rectB2.x >= SCREEN_WEIGHT) {
+				rectB2.x = rectP2.x;
+				shoot = false;
 			}
 		}
 		SDL_RenderPresent(winRender);
