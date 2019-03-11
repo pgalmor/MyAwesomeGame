@@ -1,21 +1,20 @@
 #include <iostream>
 #include "SDL/include/SDL.h"
 #include "SDL_image/include/SDL_image.h"
+#include "SDL_mixer/include/SDL_mixer.h"
 
 #pragma comment(lib, "SDL/libx86/SDL2.lib")
 #pragma comment(lib, "SDL/libx86/SDL2main.lib")
 #pragma comment(lib, "SDL_image/libx86/SDL2_image.lib")
+#pragma comment(lib, "SDL_mixer/libx86/SDL2_mixer.lib")
 
 using namespace std;
 
-void clear(SDL_Renderer * winRender, SDL_Texture * Background, SDL_Rect * rectBack);
-void draw(SDL_Renderer * winRender, SDL_Rect * rectangle);
-void drawShot(SDL_Renderer * winRender, SDL_Rect * shot);
-
 int main(int argc, char **argv) {
 	bool winClose = true;
-	int SDL_Init(SDL_INIT_VIDEO);
-	int IMG_Init(IMG_INIT_PNG);
+	
+
+	int SCREEN_WEIGHT = 1920, SCREEN_HEIGHT = 1080;
 
 	SDL_Window *mainFin;
 	SDL_Renderer *winRender;
@@ -30,7 +29,7 @@ int main(int argc, char **argv) {
 	SDL_Texture *Bullet;
 
 	bool shoot = false;
-	mainFin = SDL_CreateWindow("MyAwesomeGame by Pol Galan", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1920, 1080, SDL_WINDOW_RESIZABLE);
+	mainFin = SDL_CreateWindow("MyAwesomeGame by Pol Galan", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, SCREEN_WEIGHT, SCREEN_HEIGHT, SDL_WINDOW_RESIZABLE);
 	winRender = SDL_CreateRenderer(mainFin, -1, SDL_RENDERER_ACCELERATED);
 	SDL_Event event;
 	
@@ -57,15 +56,15 @@ int main(int argc, char **argv) {
 	SDL_FreeSurface(Load_Surf);
 
 	
-	rectP.x = 20;
-	rectP.y = 10;
+	rectP.x = 0;
+	rectP.y = 0;
 	rectP.w = 480;
 	rectP.h = 480;
 
-	rectP2.x = 0;
-	rectP2.y = 0;
-	rectP2.w = 120;
-	rectP2.h = 120;
+	rectP2.x = 20;
+	rectP2.y = 10;
+	rectP2.w = 240;
+	rectP2.h = 240;
 
 	rectB.x = 0;
 	rectB.y = 0;
@@ -74,8 +73,8 @@ int main(int argc, char **argv) {
 
 	rectB2.x = 0;
 	rectB2.y = 0;
-	rectB2.w = 85;
-	rectB2.h = 85;
+	rectB2.w = 60;
+	rectB2.h = 60;
 
 	rectBack.x = 0;
 	rectBack.y = 0;
@@ -91,24 +90,24 @@ int main(int argc, char **argv) {
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {
 				case SDLK_LEFT:
-					if (rectP.x != 0) {
-						rectP.x = rectP.x - 15;
+					if (rectP2.x != 0) {
+						rectP2.x = rectP2.x - 15;
 					}
 					break;
 				case SDLK_RIGHT:
-					if (rectP.x != 400) {
-						rectP.x = rectP.x + 15;
+					if (rectP2.x != 400) {
+						rectP2.x = rectP2.x + 15;
 					}
 					break;
 				case SDLK_UP:
-					rectP.y = rectP.y - 15;
+					rectP2.y = rectP2.y - 15;
 					break;
 				case SDLK_DOWN:
-					rectP.y = rectP.y + 15;
+					rectP2.y = rectP2.y + 15;
 					break;
 				case SDLK_SPACE:
-					rectB.x = rectP.x + 200;
-					rectB.y = rectP.y + 40;
+					rectB2.x = rectP2.x + 240;
+					rectB2.y = rectP2.y + 89;
 					shoot = true;
 					break;
 				case SDLK_ESCAPE:
@@ -117,47 +116,28 @@ int main(int argc, char **argv) {
 				}
 			}
 		}
-		clear(winRender, Background, &rectBack);
-		draw(winRender, &rectP);
+		SDL_RenderCopy(winRender, Background, NULL, NULL);
+		SDL_RenderCopy(winRender, Player, &rectP, &rectP2);
 		if (shoot == true) {
-			drawShot(winRender, &rectB);
+			SDL_RenderCopy(winRender, Bullet, &rectB, &rectB2);
+			while (shoot == true) {
+				rectB2.x += 1;
+				if (rectB2.x >= SCREEN_WEIGHT) {
+					shoot = false;
+				}
+			}
 		}
+		SDL_RenderPresent(winRender);
 	}
+	SDL_DestroyTexture(Background);
+	SDL_DestroyTexture(Player);
+	SDL_DestroyTexture(Bullet);
 	SDL_DestroyRenderer(winRender);
 	SDL_DestroyWindow(mainFin);
+	Mix_CloseAudio();
+	Mix_Quit();
 	IMG_Quit();
 	SDL_Quit();
-	cin.get();
 
 	return 0;
-}
-
-void clear(SDL_Renderer * winRender, SDL_Texture * Background, SDL_Rect * rectBack) {
-	SDL_RenderCopy(winRender, Background, NULL, NULL);
-	SDL_RenderPresent(winRender);
-}
-
-void draw(SDL_Renderer * winRender, SDL_Rect * rectP) {
-	SDL_SetRenderDrawColor(winRender, 255, 0, 0, 0);
-	SDL_RenderFillRect(winRender, rectP);
-	SDL_RenderPresent(winRender);
-	SDL_Delay(15);
-}
-
-void drawShot(SDL_Renderer * winRender, SDL_Rect * rectB) {
-	for (int i = 0; i < 30; i++) {
-		SDL_Rect noDelay;
-		noDelay.x = rectB->x;
-		noDelay.y = rectB->y;
-		noDelay.w = 4;
-		noDelay.h = rectB->h;
-
-		rectB->x += 4;
-		SDL_SetRenderDrawColor(winRender, 0, 255, 0, 0);
-		SDL_RenderFillRect(winRender, rectB);
-		SDL_RenderPresent(winRender);
-		SDL_SetRenderDrawColor(winRender, 0, 0, 0xff, 0xff);
-		SDL_RenderFillRect(winRender, &noDelay);
-		SDL_RenderPresent(winRender);
-	}
 }
