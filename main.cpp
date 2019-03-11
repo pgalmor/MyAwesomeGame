@@ -6,10 +6,11 @@
 #pragma comment(lib, "SDL/libx86/SDL2main.lib")
 #pragma comment(lib, "SDL_image/libx86/SDL2_image.lib")
 
-
 using namespace std;
 
-#define Bullet_No 10 // Maximum no of alive bullet
+void clear(SDL_Renderer * winRender, SDL_Texture * Background, SDL_Rect * rectBack);
+void draw(SDL_Renderer * winRender, SDL_Rect * rectangle);
+void drawShot(SDL_Renderer * winRender, SDL_Rect * shot);
 
 int main(int argc, char **argv) {
 	bool winClose = true;
@@ -18,44 +19,68 @@ int main(int argc, char **argv) {
 
 	SDL_Window *mainFin;
 	SDL_Renderer *winRender;
-	SDL_Rect rectangle;
-	SDL_Rect shot;
-	
-	SDL_Surface *image;
-	image = IMG_Load("Assets/pingu.png");
-	if (!image) {
-		winClose = false;
-	}
+	SDL_Rect rectP;
+	SDL_Rect rectP2;
+	SDL_Rect rectB;
+	SDL_Rect rectB2;
+	SDL_Rect rectBack;
+	SDL_Surface *Load_Surf;
+	SDL_Texture *Player;
+	SDL_Texture *Background;
+	SDL_Texture *Bullet;
 
-	/*class _Bullet {
-	public:
-		bool alive; // For bullet alive checking
-		SDL_Rect shot; // For SDL fill rectangle
-		char w, h; // The width & height of a bullet
-	} bullet[Bullet_No];
-	// Initialize the bullet
-	for (int i = 0; i < Bullet_No; i++) {
-		bullet[i].alive = 0;
-		bullet[i].w = 75; // Bullet Size Configuration
-		bullet[i].h = 20;
-	}*/
-
-	
 	bool shoot = false;
-	mainFin = SDL_CreateWindow("MyAwesomeGame by Pol Galan", 600, 100, 600, 600, SDL_WINDOW_RESIZABLE);
+	mainFin = SDL_CreateWindow("MyAwesomeGame by Pol Galan", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1920, 1080, SDL_WINDOW_RESIZABLE);
 	winRender = SDL_CreateRenderer(mainFin, -1, SDL_RENDERER_ACCELERATED);
 	SDL_Event event;
-	rectangle.x = 20;
-	rectangle.y = 10;
-	rectangle.w = 200;
-	rectangle.h = 100;
-
-	while (shoot == true) {
-		shot.x = rectangle.x + 200;
-		shot.y = rectangle.y + 40;
-		shot.w = 75;
-		shot.h = 20;
+	
+	Load_Surf = IMG_Load("Assets/Pingu.png");
+	if (!Load_Surf) {
+		winClose = false;
 	}
+	Player = SDL_CreateTextureFromSurface(winRender, Load_Surf);
+	SDL_FreeSurface(Load_Surf);
+
+	Load_Surf = IMG_Load("Assets/Bullet.png");
+	if (!Load_Surf) {
+		winClose = false;
+	}
+	Bullet = SDL_CreateTextureFromSurface(winRender, Load_Surf);
+	SDL_FreeSurface(Load_Surf);
+
+
+	Load_Surf = IMG_Load("Assets/Igloo.jpg");
+	if (!Load_Surf) {
+		winClose = false;
+	}
+	Background = SDL_CreateTextureFromSurface(winRender, Load_Surf);
+	SDL_FreeSurface(Load_Surf);
+
+	
+	rectP.x = 20;
+	rectP.y = 10;
+	rectP.w = 480;
+	rectP.h = 480;
+
+	rectP2.x = 0;
+	rectP2.y = 0;
+	rectP2.w = 120;
+	rectP2.h = 120;
+
+	rectB.x = 0;
+	rectB.y = 0;
+	rectB.w = 170;
+	rectB.h = 170;
+
+	rectB2.x = 0;
+	rectB2.y = 0;
+	rectB2.w = 85;
+	rectB2.h = 85;
+
+	rectBack.x = 0;
+	rectBack.y = 0;
+	rectBack.w = 1920;
+	rectBack.h = 1080;
 
 	while (winClose) {
 		if (SDL_PollEvent(&event)) {
@@ -66,24 +91,25 @@ int main(int argc, char **argv) {
 			case SDL_KEYDOWN:
 				switch (event.key.keysym.sym) {
 				case SDLK_LEFT:
-					if (rectangle.x != 0) {
-						rectangle.x = rectangle.x - 4;
+					if (rectP.x != 0) {
+						rectP.x = rectP.x - 15;
 					}
 					break;
 				case SDLK_RIGHT:
-					if (rectangle.x != 400) {
-						rectangle.x = rectangle.x + 4;
+					if (rectP.x != 400) {
+						rectP.x = rectP.x + 15;
 					}
 					break;
 				case SDLK_UP:
-					rectangle.y = rectangle.y - 4;
+					rectP.y = rectP.y - 15;
 					break;
 				case SDLK_DOWN:
-					rectangle.y = rectangle.y + 4;
+					rectP.y = rectP.y + 15;
 					break;
 				case SDLK_SPACE:
+					rectB.x = rectP.x + 200;
+					rectB.y = rectP.y + 40;
 					shoot = true;
-					
 					break;
 				case SDLK_ESCAPE:
 					winClose = false;
@@ -91,13 +117,11 @@ int main(int argc, char **argv) {
 				}
 			}
 		}
-		SDL_SetRenderDrawColor(winRender, 255, 0, 0, 0);
-		SDL_RenderFillRect(winRender, &rectangle);
-		SDL_SetRenderDrawColor(winRender, 0, 255, 0, 0);
-		SDL_RenderFillRect(winRender, &shot);
-		SDL_RenderPresent(winRender);
-		SDL_SetRenderDrawColor(winRender, 0, 0, 0xff, 0xff);
-		SDL_RenderClear(winRender);
+		clear(winRender, Background, &rectBack);
+		draw(winRender, &rectP);
+		if (shoot == true) {
+			drawShot(winRender, &rectB);
+		}
 	}
 	SDL_DestroyRenderer(winRender);
 	SDL_DestroyWindow(mainFin);
@@ -105,35 +129,35 @@ int main(int argc, char **argv) {
 	SDL_Quit();
 	cin.get();
 
-
-	
-	/*
-	while (shotRun) {
-
-		// Check if exist any empty slot for Initialize a bullet
-		if (bKeySpace == 1 && bKeySpaceTick % 10 == 1) {
-			for (int i = 0; i < Bullet_No; i++) if (!bullet[i].alive) {
-				bullet[i].alive = 1;
-				bullet[i].shot.x = rectangle.x + 200;
-				bullet[i].shot.y = rectangle.y + 40;
-				break; // break this for( ) loop
-			}
-		} // if(bKeyA == 1 && bKeyATick%10 == 1) { END
-		for (int i = 0; i < Bullet_No; i++) if (bullet[i].alive) {
-			bullet[i].shot.x += 5;
-			bullet[i].shot.w = bullet[i].w;
-			bullet[i].shot.h = bullet[i].h;
-			SDL_SetRenderDrawColor(winRender, 0, 255, 0, 0);
-			SDL_RenderFillRect(winRender, &bullet[i].shot);
-			// Bullet Destroy condition
-			if (bullet[i].shot.x > 600) bullet[i].alive = 0;
-		}
-
-		if (bKeySpace) bKeySpaceTick++; // Press KeyA counter + 1
-		if (!bKeySpace) bKeySpaceTick = 0; // Release KeyA counter = 0
-
-	}; // while(bRun) { END
-	*/
-
 	return 0;
+}
+
+void clear(SDL_Renderer * winRender, SDL_Texture * Background, SDL_Rect * rectBack) {
+	SDL_RenderCopy(winRender, Background, NULL, NULL);
+	SDL_RenderPresent(winRender);
+}
+
+void draw(SDL_Renderer * winRender, SDL_Rect * rectP) {
+	SDL_SetRenderDrawColor(winRender, 255, 0, 0, 0);
+	SDL_RenderFillRect(winRender, rectP);
+	SDL_RenderPresent(winRender);
+	SDL_Delay(15);
+}
+
+void drawShot(SDL_Renderer * winRender, SDL_Rect * rectB) {
+	for (int i = 0; i < 30; i++) {
+		SDL_Rect noDelay;
+		noDelay.x = rectB->x;
+		noDelay.y = rectB->y;
+		noDelay.w = 4;
+		noDelay.h = rectB->h;
+
+		rectB->x += 4;
+		SDL_SetRenderDrawColor(winRender, 0, 255, 0, 0);
+		SDL_RenderFillRect(winRender, rectB);
+		SDL_RenderPresent(winRender);
+		SDL_SetRenderDrawColor(winRender, 0, 0, 0xff, 0xff);
+		SDL_RenderFillRect(winRender, &noDelay);
+		SDL_RenderPresent(winRender);
+	}
 }
